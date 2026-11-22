@@ -1,0 +1,28 @@
+# 本机凭据和运行状态
+/tools/config.json
+/tools/config.json.previous
+/tools/recycle-config.json
+/tools/*.dpapi
+/tools/upload-index.sqlite3*
+/tools/recycle-state.json*
+/tools/recycle-report.json*
+/tools/recycle.lock
+/tools/backups/
+/tools/tests/artifacts/
+/docs/local/
+**/.env
+**/.env.local
+**/.env.*.local
+
+# 依赖、构建与本地测试缓存；上游已追踪的文件继续受版本控制
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/target/
+**/.wrangler/
+**/data/
+/web/dist/
+/desktop/dist/
+/build/
+/artifacts/

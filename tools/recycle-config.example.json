@@ -1,0 +1,9 @@
+{
+  "noteRoots": ["D:/Notes"],
+  "activeFolder": "typora",
+  "trashFolder": "回收站",
+  "bucketName": "your-typora-imgbed-bucket",
+  "unreferencedDays": 30,
+  "maxScanGapDays": 2,
+  "maxMovesPerRun": 100
+}
