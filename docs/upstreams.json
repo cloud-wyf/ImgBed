@@ -1,0 +1,31 @@
+{
+  "recordedOn": "2026-11-22",
+  "integration": "git-subtree",
+  "history": "squash",
+  "subtrees": [
+    {
+      "prefix": "backend",
+      "remote": "backend-upstream",
+      "url": "https://github.com/MarSeventh/CloudFlare-ImgBed.git",
+      "branch": "main",
+      "commit": "611153e47cc839ecf28b344bcd233032a37cc216",
+      "version": "2.7.8"
+    },
+    {
+      "prefix": "web",
+      "remote": "web-upstream",
+      "url": "https://github.com/MarSeventh/Sanyue-ImgHub.git",
+      "branch": "master",
+      "commit": "1621525ce523782852d46d43c4cf3d036dda520b",
+      "version": "2.7.8"
+    },
+    {
+      "prefix": "desktop",
+      "remote": "desktop-upstream",
+      "url": "https://github.com/MarSeventh/satellite.git",
+      "branch": "main",
+      "commit": "cf75bd8114e093d8143895fc8c82960dad7420ce",
+      "version": "0.1.47"
+    }
+  ]
+}
