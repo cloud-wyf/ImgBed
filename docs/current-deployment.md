@@ -4,7 +4,7 @@
 
 - 图床地址：https://slanwyf-imgbed.pages.dev
 - Cloudflare Pages 项目：`slanwyf-imgbed`，前端静态资源与后端 Pages Functions 合并部署。
-- 当前部署源快照版本：`CloudFlare-ImgBed 2.7.8`，来自 2026-11-14 的部署记录；本仓库导入的官方提交另见 `upstreams.json`。
+- 当前部署后端与网页版本为 `2.7.8`，2026-11-22 已通过本仓库 GitHub Actions 构建和部署；本仓库导入的官方提交另见 `upstreams.json`。
 - D1 保存图床元数据；Backblaze B2 私有桶 `slanwyf-typora-imgbed` 保存图片，通过 `S3_env` 渠道访问。
 - 运行目录：`D:/Program Files/TyporaImgBed`。Typora 调用该目录中的 `upload.py`，Python 使用本机现有 version-fox 安装。
 - Windows 计划任务：`TyporaImgBed-每日图片回收`，每天北京时间 20:00 执行现有运行目录中的 `recycle.py --apply`。
@@ -22,6 +22,8 @@
 ## 2026-11-22 增加的自动部署入口
 
 本仓库增加 `.github/workflows/pages-deploy.yml`，在后端、网页或部署代码推送到 `main` 后，通过 GitHub Actions 检查并构建前后端，再用 Wrangler 发布到同一个 `slanwyf-imgbed` Pages 项目。首次发布依赖仓库的 Cloudflare Secrets 配置；实际发布提交和结果以 [Actions 运行记录](https://github.com/cloud-wyf/ImgBed/actions/workflows/pages-deploy.yml) 及 Cloudflare 部署历史为准。构建和凭据要求见 [自动部署说明](build.md#自动部署到现有-pages-项目)。
+
+2026-11-22 北京时间 18:16，配置当前账号的 Pages Write Token 并保存为 GitHub Secret 后，首次发布成功。源码提交为 `64754bc3cb9e22b1af3385c9916f2a40b48f2a3b`；后端 278 项、前端 238 项检查、前后端构建、部署以及线上提交标记、首页和 Pages 后端检查均通过，见 [首次成功运行](https://github.com/cloud-wyf/ImgBed/actions/runs/45007214561/attempts/2)。D1、B2 和图床认证继续使用原项目配置。
 
 ## 已发现的文档链接问题
 
