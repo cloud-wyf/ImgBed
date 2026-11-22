@@ -20,7 +20,7 @@
 维护验证：
 
 ```powershell
-Set-Location "D:/Development/WorkSpace/typora-imgbed"
+Set-Location "D:/Development/WorkSpace/ImgBed"
 python -B -m unittest discover -s "tools/tests" -p "test_*.py"
 python -B "tools/tests/verify_protocol.py"
 ```
