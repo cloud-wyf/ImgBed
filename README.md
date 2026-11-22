@@ -8,6 +8,7 @@ ImgBed/
 ├── web/       Sanyue-ImgHub 子树
 ├── desktop/   Satellite 子树
 ├── tools/     本地集成工具（当前为 Typora 上传、去重和回收）
+├── ci/        Pages 打包与部署核对脚本
 ├── docs/      上游维护、构建和当前部署记录
 └── README.md
 ```
@@ -18,4 +19,4 @@ ImgBed/
 
 本仓库完整保存三份源码，统一托管在个人公开仓库 [cloud-wyf/ImgBed](https://github.com/cloud-wyf/ImgBed)。日后依次合并各子树的上游更新，完成验证后统一推送到 `origin`；三个官方上游 remote 用于获取更新。
 
-Cloudflare 支持部署私有 GitHub 仓库，需要授权 Cloudflare GitHub App 访问该仓库。GitHub 保存源码与构建说明，部署时仍需构建 Vue 前端和打包后端函数；构建可在 Cloudflare 或 GitHub Actions 上执行，不要求每次在本机手工打包。当前生产图床尚未连接本仓库的自动部署流程。
+同步后端和网页上游、处理冲突并推送到 `main` 后，根目录的 [GitHub Actions 工作流](.github/workflows/pages-deploy.yml) 自动检查、构建前后端，并通过 Wrangler 发布到现有 Pages 项目 `slanwyf-imgbed`。首次启用需要配置 Cloudflare Secrets，详见 [自动部署说明](docs/build.md#自动部署到现有-pages-项目)。

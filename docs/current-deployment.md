@@ -19,6 +19,10 @@
 
 这次部署没有使用 GitHub Actions，也没有由 Cloudflare 拉取源码执行构建；Cloudflare 接收部署产物并托管运行。依据为原任务目录中的 `deployment-state.json`、`prepare_pages.py`、`fix_pages_package.py` 和对应 Wrangler 构建、发布日志。
 
+## 2026-11-22 增加的自动部署入口
+
+本仓库增加 `.github/workflows/pages-deploy.yml`，在后端、网页或部署代码推送到 `main` 后，通过 GitHub Actions 检查并构建前后端，再用 Wrangler 发布到同一个 `slanwyf-imgbed` Pages 项目。首次发布依赖仓库的 Cloudflare Secrets 配置；实际发布提交和结果以 [Actions 运行记录](https://github.com/cloud-wyf/ImgBed/actions/workflows/pages-deploy.yml) 及 Cloudflare 部署历史为准。构建和凭据要求见 [自动部署说明](build.md#自动部署到现有-pages-项目)。
+
 ## 已发现的文档链接问题
 
 2026-11-22 只读核对发现，云端两张图片已从 `typora/2026/11/` 移到 `typora/`，而 `D:/Notes` 仍引用旧路径。旧地址绕过缓存后返回 404。网页移动不会改写本地 Markdown；路径不同也会影响本地引用核对。

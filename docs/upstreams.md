@@ -24,6 +24,14 @@ git subtree pull --prefix="desktop" desktop-upstream main --squash
 
 本仓库的三个官方 remote 用于获取源码；个人远程 `origin` 是 `https://github.com/cloud-wyf/ImgBed.git`，仓库为公开。推送根仓库即可上传全部源码，不需要再为三个子树建立独立个人仓库。不要将官方 remote 当作个人发布目标。
 
+完成需要的后端、网页更新并处理冲突后，统一推送：
+
+```powershell
+git push origin main
+```
+
+当推送包含 `backend/`、`web/`、`ci/` 或部署工作流的变更时，GitHub Actions 自动检查、打包并部署前后端；仅在本地同步不会触发。前后端存在跨项目接口变化时，先同步相互兼容的版本，再一次性推送。仅桌面端、工具或文档变更不会触发 Pages 自动部署。GitHub 上的定时自动拉取上游尚未配置，合并冲突仍在本地处理。
+
 ## 在另一台电脑恢复
 
 普通 `git clone` 即可获取全部源码，不需要 `--recurse-submodules`。Git remote 配置不会随 clone 自动恢复；需要更新官方代码时，按上表重新添加三个官方 remote。账户凭据、生产配置及运行数据库单独恢复，不从 Git 历史获取。

@@ -1,0 +1,106 @@
+name: 构建并部署图床
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'web/**'
+      - 'ci/**'
+      - '.github/workflows/pages-deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'web/**'
+      - 'ci/**'
+      - '.github/workflows/pages-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 检查并打包前后端
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            web/package-lock.json
+      - name: 安装后端依赖
+        run: npm ci --no-audit --no-fund
+        working-directory: backend
+      - name: 安装前端依赖
+        run: npm ci --no-audit --no-fund
+        working-directory: web
+      - name: 后端回归检查
+        run: npm test && npm run test:server
+        working-directory: backend
+      - name: 前端回归检查
+        run: npm test
+        working-directory: web
+      - name: 构建前端
+        run: npm run build
+        working-directory: web
+      - name: 打包 Pages Functions 与静态文件
+        run: node ci/build-pages.mjs
+      - name: 保存部署产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-${{ github.sha }}
+          path: build/pages/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: 发布到现有 Cloudflare Pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_PAGES_PROJECT: slanwyf-imgbed
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: 检查部署凭据和现有项目
+        run: node ci/check-pages-project.mjs
+      - name: 安装锁定的部署工具
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: backend
+      - uses: actions/download-artifact@v4
+        with:
+          name: pages-${{ github.sha }}
+          path: build/pages/
+      - name: 发布前后端到 main
+        run: >-
+          node backend/node_modules/wrangler/bin/wrangler.js pages deploy build/pages
+          --project-name "$CLOUDFLARE_PAGES_PROJECT"
+          --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=false
+      - name: 验证线上页面和后端响应
+        run: node ci/check-pages-project.mjs --verify-site
