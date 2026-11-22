@@ -1,0 +1,92 @@
+name: Build Satellite
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: '--target x86_64-pc-windows-msvc'
+          - platform: macos-latest
+            args: '--target aarch64-apple-darwin'
+          - platform: macos-latest
+            args: '--target x86_64-apple-darwin'
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Sync version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "
+            const fs = require('fs');
+            const ver = process.argv[1];
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = ver;
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+            const conf = JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json', 'utf8'));
+            conf.version = ver;
+            fs.writeFileSync('src-tauri/tauri.conf.json', JSON.stringify(conf, null, 2) + '\n');
+            let cargo = fs.readFileSync('src-tauri/Cargo.toml', 'utf8');
+            cargo = cargo.replace(/^version = \".*\"/m, 'version = \"' + ver + '\"');
+            fs.writeFileSync('src-tauri/Cargo.toml', cargo);
+            console.log('Version synced to ' + ver);
+          " "$VERSION"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_API: 1
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Satellite ${{ github.ref_name }}'
+          releaseBody: |
+            🛰️ Satellite 新版本发布！
+
+            **安装包：**
+            - Windows: `.exe` 安装包
+            - macOS (Apple Silicon): `aarch64.dmg`
+            - macOS (Intel): `x86_64.dmg`
+
+            **macOS 用户注意：** 如提示"已损坏"或无法打开，请在终端执行：
+            ```
+            xattr -cr /Applications/Satellite.app
+            ```
+            然后重新打开即可。（因未购买 Apple 开发者签名，系统会误报）
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
