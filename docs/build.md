@@ -34,7 +34,7 @@ npm run tauri build
 
 Python 代码编译检查可在不生成缓存文件的情况下完成；单元测试在 `tools/tests/`，使用模拟接口与内存数据库，不调用生产 API。真实云端测试另外明确安排，不随普通单元测试自动运行。
 
-## 源码、构建产物与私有仓库
+## 源码、构建产物与仓库可见性
 
 GitHub 中保存完整源码、依赖锁文件和维护说明。运行部署依赖构建产物，不能把 Vue `.vue` 文件和未打包的后端依赖当成可以直接拖放上传的站点。后端内已有的 `frontend-dist/` 是上游预构建页面；只使用它时无需重建网页，但修改 `web/` 后必须重新构建并同步产物。
 
@@ -43,8 +43,8 @@ GitHub 中保存完整源码、依赖锁文件和维护说明。运行部署依�
 - Pages Git integration：授权 Cloudflare GitHub App 访问仓库，设置项目根目录、构建命令和静态输出目录，由 Cloudflare 构建及部署。此仓库含多个项目，需明确选择 `backend/` 为后端工程根目录，并让构建流程处理 `web/`。`functions/` 位于该 Pages 工程根目录，不能只部署 `web/dist/`。
 - GitHub Actions + Wrangler：在 CI 中构建网页及函数，然后发布到 Pages。这样本机只需维护和推送源码，不必每次手工构建。
 
-当前生产图床来自此前的直接上传部署。本仓库的首次 GitHub 推送不会自动发布到该图床。Cloudflare 不支持将 Direct Upload 项目直接切换为 Git integration；若保留现有 Pages 项目和地址，可后续用 GitHub Actions + Wrangler 发布到原项目。使用 Pages 原生 Git integration 则需新建相应项目并处理绑定配置。
+当前生产图床来自此前的直接上传部署：使用上游预构建前端，在本机用 Wrangler 打包后端函数，然后上传到 Cloudflare；当时未使用 GitHub Actions 或 Cloudflare 源码构建。详细记录见 [当前部署记录](current-deployment.md)。本仓库的首次 GitHub 推送不会自动发布到该图床。Cloudflare 不支持将 Direct Upload 项目直接切换为 Git integration；若保留现有 Pages 项目和地址，可后续用 GitHub Actions + Wrangler 发布到原项目。使用 Pages 原生 Git integration 则需新建相应项目并处理绑定配置。
 
-桌面客户端需要另行编译成 Windows/macOS 应用，不作为 Pages 后端或网页资产部署。仓库私有仅限制源码访问，部署后图床的访问权限仍由图床认证和 Cloudflare 访问设置决定。
+本仓库为公开仓库。桌面客户端需要另行编译成 Windows/macOS 应用，不作为 Pages 后端或网页资产部署。GitHub 仓库可见性决定源码访问范围，部署后图床的访问权限仍由图床认证和 Cloudflare 访问设置决定。
 
 官方依据：[私有仓库支持](https://developers.cloudflare.com/pages/get-started/git-integration/)、[构建配置](https://developers.cloudflare.com/pages/configuration/build-configuration/)、[Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)。

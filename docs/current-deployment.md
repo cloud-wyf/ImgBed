@@ -13,6 +13,12 @@
 
 账户密码、Token 和 B2 密钥使用当前 Windows 用户的 DPAPI 文件保存，不进入本仓库。`config.json`、`upload-index.sqlite3`、回收计时与报告继续留在运行目录。
 
+## 现有部署的构建来源
+
+2026-11-14 的部署使用从 GitHub 下载的官方源码，其中 `frontend-dist/` 已包含上游预构建的前端。本机通过 Wrangler 编译、打包 Pages Functions，生成 `_worker.js`，再与静态资源及 `_routes.json` 组合成部署目录和 ZIP。初期通过 Cloudflare 控制台上传 ZIP，后续修正版也通过本机 Wrangler 发布。
+
+这次部署没有使用 GitHub Actions，也没有由 Cloudflare 拉取源码执行构建；Cloudflare 接收部署产物并托管运行。依据为原任务目录中的 `deployment-state.json`、`prepare_pages.py`、`fix_pages_package.py` 和对应 Wrangler 构建、发布日志。
+
 ## 已发现的文档链接问题
 
 2026-11-22 只读核对发现，云端两张图片已从 `typora/2026/11/` 移到 `typora/`，而 `D:/Notes` 仍引用旧路径。旧地址绕过缓存后返回 404。网页移动不会改写本地 Markdown；路径不同也会影响本地引用核对。

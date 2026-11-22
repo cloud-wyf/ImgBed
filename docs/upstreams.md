@@ -22,7 +22,7 @@ git subtree pull --prefix="desktop" desktop-upstream main --squash
 
 `subtree pull` 会获取并合并上游代码，成功时产生本地合并提交。有冲突时按正常 Git 合并处理，核对个人定制后再继续。不要进入子目录执行普通 `git pull`，因为它们共享根仓库。
 
-本仓库的三个官方 remote 用于获取源码；个人远程 `origin` 是 `https://github.com/cloud-wyf/ImgBed.git`，仓库为私有。推送根仓库即可上传全部源码，不需要再为三个子树建立独立个人仓库。不要将官方 remote 当作个人发布目标。
+本仓库的三个官方 remote 用于获取源码；个人远程 `origin` 是 `https://github.com/cloud-wyf/ImgBed.git`，仓库为公开。推送根仓库即可上传全部源码，不需要再为三个子树建立独立个人仓库。不要将官方 remote 当作个人发布目标。
 
 ## 在另一台电脑恢复
 
